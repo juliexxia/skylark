@@ -14,6 +14,7 @@
 
 # (From https://github.com/bazelbuild/rules_go/blob/master/go/def.bzl@a6f9d0c)
 
+load("@bazel_tools//tools/cpp:toolchain_utils.bzl", "find_cpp_toolchain")
 load("//go/private:repositories.bzl", "go_repositories")
 load("//go/private:go_repository.bzl", "go_repository", "new_go_repository")
 load("//go/private:go_prefix.bzl", "go_prefix")
@@ -659,6 +660,11 @@ _crosstool_attrs = {
     "_crosstool": attr.label(
         default = Label("//tools/defaults:crosstool"),
     ),
+    # Do not add references, temporary attribute for find_cpp_toolchain.
+    # See go/skylark-api-for-cc-toolchain for more details.
+    "_cc_toolchain": attr.label(
+        default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
+    ),
 }
 
 go_link_attrs = go_library_attrs + _crosstool_attrs + {
@@ -675,6 +681,11 @@ go_library = rule(
                 "cgo_obj",
                 "cgo_deps",
             ],
+        ),
+        # Do not add references, temporary attribute for find_cpp_toolchain.
+        # See go/skylark-api-for-cc-toolchain for more details.
+        "_cc_toolchain": attr.label(
+            default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
     },
     fragments = ["cpp"],
@@ -982,6 +993,11 @@ _cgo_import = rule(
             default = Label("//go/tools/extract_package"),
             executable = True,
             cfg = "host",
+        ),
+        # Do not add references, temporary attribute for find_cpp_toolchain.
+        # See go/skylark-api-for-cc-toolchain for more details.
+        "_cc_toolchain": attr.label(
+            default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
         ),
     },
     fragments = ["cpp"],
